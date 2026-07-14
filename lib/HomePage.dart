@@ -12,6 +12,10 @@ import 'package:cafe_craze/MyText.dart';
 import 'package:cafe_craze/SearchBox.dart';
 import 'package:flutter/material.dart';
 
+import 'package:cafe_craze/CartPage.dart';
+import 'package:cafe_craze/FavoritesPage.dart';
+import 'package:cafe_craze/OrderHistoryPage.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -101,50 +105,79 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Define the Home Content Widget (extracted from original body)
+    Widget homeContent = SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 30),
+            MyText(
+              text: "Find the best",
+              fWeight: FontWeight.bold,
+              size: 28,
+              height: 1.3,
+            ),
+            MyText(
+              text: "coffee for you",
+              fWeight: FontWeight.bold,
+              size: 28,
+              height: 1.3,
+            ),
+            SizedBox(height: 35),
+
+            const Searchbox(),
+
+            SizedBox(height: 35),
+            CategorySelector(
+              categories: categories,
+              onCategoryTap: onCategoryTap,
+            ),
+
+            SizedBox(height: 30),
+            Coffeelist(
+              scrollController: scrollController,
+              selectedList: selectedCoffeeList,
+            ),
+
+            SizedBox(height: 30),
+            MyText(text: "Coffee beans", size: 18),
+            SizedBox(height: 20),
+            BeansList(selectedList: beansList),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+
+    Widget bodyContent;
+    switch (selectedNavbarItemIndex) {
+      case 0:
+        bodyContent = homeContent;
+        break;
+      case 1:
+        bodyContent = const CartPage();
+        break;
+      case 2:
+        bodyContent = const FavoritesPage();
+        break;
+      case 3:
+        bodyContent = const OrderHistoryPage();
+        break;
+      default:
+        bodyContent = homeContent;
+    }
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff0c0f14),
-        appBar: MyAppbar(),
+        appBar:
+            selectedNavbarItemIndex == 0
+                ? MyAppbar()
+                : null, // Only show AppBar on Home
         drawer: MyDrawer(),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 30),
-                MyText(
-                  text: "Find the best",
-                  fWeight: FontWeight.bold,
-                  size: 28,
-                  height: 1.3,
-                ),
-                MyText(
-                  text: "coffee for you",
-                  fWeight: FontWeight.bold,
-                  size: 28,
-                  height: 1.3,
-                ),
-                SizedBox(height: 35),
-                Searchbox(),
-                SizedBox(height: 30),
-                CategorySelector(
-                  categories: categories,
-                  onCategoryTap: onCategoryTap,
-                ),
-                Coffeelist(
-                  scrollController: scrollController,
-                  selectedList: selectedCoffeeList,
-                ),
-                SizedBox(height: 10),
-                MyText(text: "Coffee beans", size: 16),
-                SizedBox(height: 10),
-                BeansList(selectedList: beansList),
-                SizedBox(height: 50),
-              ],
-            ),
-          ),
-        ),
+        body: bodyContent,
         bottomNavigationBar: MyBottomNavbar(
           selectedNavbarItemIndex: selectedNavbarItemIndex,
           setNavbarItemIndex: setNavbarItemIndex,
